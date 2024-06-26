@@ -20,9 +20,9 @@ const HomeContent = ({ data, loading }) => {
   }
 
   const latestItem = data[0];
-  console.log('data', data);
+  // console.log('data', data);
 
-  console.log('latestItem',latestItem);
+  // console.log('latestItem',latestItem);
 
   // Prepare data for the line graph
   const graphData = {

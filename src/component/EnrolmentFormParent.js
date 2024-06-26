@@ -161,7 +161,7 @@ const EnrolmentFormParent = () => {
 
   // console.log('extractedData', extractedData);
   // console.log('filteredResults', filteredResults);
-  console.log('categoryCounts', categoryCounts);
+  // console.log('categoryCounts', categoryCounts);
   // console.log('formData', formData);
 
   const baseAmounts = {
@@ -306,7 +306,8 @@ const EnrolmentFormParent = () => {
       navigate('/')
       // Optionally, show success message or navigate to another page
     } catch (error) {
-      console.error('Error adding document: ', error);
+      // console.error('Error adding document: ', error);
+      alert('error uploading the to the firebase')
       // Handle error
     }
   };

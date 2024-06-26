@@ -37,7 +37,8 @@ const Home = () => {
         setData(fetchedData);
         setLoading(false);
       } catch (error) {
-        console.error("Error fetching data: ", error);
+        // console.error("Error fetching data: ", error);
+        alert(`error fetching the data`)
         setLoading(false); // Ensure loading state is set to false on error
       }
     };
@@ -45,7 +46,7 @@ const Home = () => {
     fetchData();
   }, []); // Empty dependency array to fetch data once on component mount
 
-  console.log("data for the home", data);
+  // console.log("data for the home", data);
 
   // Assuming data[0].categoryCounts is an object with keys like 'new', 'demo', 'bio', etc.
   // const categoryCountsToArray = (categoryCountsObject) => {

@@ -71,7 +71,7 @@ const MainContent = ({data, loading}) => {
     { label: "Ibrahim", 
       key: "ibrahim",
       render: (name,index,row) => (
-        <span onClick={() => console.log(row.topaid)}>{name}&emsp;{(row.topaid === 0) ? 'paid' : 'Not paid'}</span>
+        <span key={index}>{name}&emsp;{(row.topaid === 0) ? 'paid' : 'Not paid'}</span>
       )
     },
     { label: "Total Earnings", key: "earnings" },

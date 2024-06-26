@@ -102,7 +102,7 @@ const Login = ({closeModal}) => {
     return errors;
   };
 
-  console.log("user",auth?.currentUser);
+  // console.log("user",auth?.currentUser);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -122,13 +122,13 @@ const Login = ({closeModal}) => {
             displayName,
           });
   
-          console.log('User created with displayName:', displayName);
+          // console.log('User created with displayName:', displayName);
           toggleForm();
           closeModal();
         } else {
           // Attempt to sign in with existing credentials
           const userCredential = await signInWithEmailAndPassword(auth, email, password);
-          console.log('User signed in:', userCredential.user);
+          // console.log('User signed in:', userCredential.user);
           closeModal();
         }
       } catch (error) {
@@ -160,11 +160,11 @@ const Login = ({closeModal}) => {
     // const provider = new GoogleAuthProvider();
     try {
       const result = await signInWithPopup(auth, GoogleProvider );
-      console.log('Google sign-in result:', result);
+      // console.log('Google sign-in result:', result);
       closeModal()
       // Handle successful sign-in, maybe redirect or update UI
     } catch (error) {
-      console.error('Error with Google sign-in:', error.message);
+      // console.error('Error with Google sign-in:', error.message);
     }
   };
 
