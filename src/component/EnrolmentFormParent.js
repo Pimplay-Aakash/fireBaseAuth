@@ -35,7 +35,7 @@ const EnrolmentFormParent = () => {
   // console.log("formData for total Earning",formData.receivedReferralDetails);
   // console.log("formData for total Earning",formData.expenseDetails);
   
-  const [ setFileContent] = useState(null);
+  const [fileContent, setFileContent] = useState(null);
   const [extractedData, setExtractedData] = useState(null);
   const [filteredResults, setFilteredResults] = useState(null);
   const [errors, setErrors] = useState({});
@@ -61,6 +61,7 @@ const EnrolmentFormParent = () => {
 
   console.log('formData',formData );
   console.log('categoryCounts',categoryCounts );
+  console.log('fileContent',fileContent );
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
