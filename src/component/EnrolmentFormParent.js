@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import EnrolmentFormPart1 from './EnrolmentFormPart1';
 import EnrolmentFormPart2 from './EnrolmentFormPart2';
 import { useNavigate } from "react-router-dom"
-import { db, auth, GoogleProvider } from '../config/firebaseConfig';
-import { collection, addDoc } from "firebase/firestore"; 
+import { db } from '../config/firebaseConfig';
+import { collection, addDoc,serverTimestamp } from "firebase/firestore"; 
 
 import { useAuth } from "../config/AuthContext"
 
@@ -35,7 +35,7 @@ const EnrolmentFormParent = () => {
   // console.log("formData for total Earning",formData.receivedReferralDetails);
   // console.log("formData for total Earning",formData.expenseDetails);
   
-  const [fileContent, setFileContent] = useState(null);
+  const [ setFileContent] = useState(null);
   const [extractedData, setExtractedData] = useState(null);
   const [filteredResults, setFilteredResults] = useState(null);
   const [errors, setErrors] = useState({});
@@ -59,7 +59,8 @@ const EnrolmentFormParent = () => {
   const { currentUser } = useAuth()
   const navigate =  useNavigate()
 
-  // console.log('currentUser', currentUser.uid);
+  console.log('formData',formData );
+  console.log('categoryCounts',categoryCounts );
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -255,9 +256,11 @@ const EnrolmentFormParent = () => {
     if (!formData.onlineCashCollected || formData.onlineCashCollected === '') {
       newErrors.onlineCashCollected = 'Online Cash Collected is required';
     }
+    // Add more validation checks as necessary
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+  
 
   // Updated handleSubmit to include validation
   const handleFormSubmit = (event) => {
@@ -278,14 +281,14 @@ const EnrolmentFormParent = () => {
       filteredResults,
       categoryCounts,
       userId: currentUser.uid,
-      timestamp: new Date(),
+      timestamp: serverTimestamp(),
     };
 
     try {
     // Send data to Firestore
     // const docRef = await db.collection('formSubmissions').addDoc(dataToSend);
     const docRef = await addDoc(collection(db, 'formSubmissions'), dataToSend);
-    // console.log('Document written with ID: ', docRef.id);
+    console.log('Document written with ID: ', docRef.id);
 
       // Optionally, reset form data after submission
       setFormData({
@@ -306,7 +309,7 @@ const EnrolmentFormParent = () => {
       navigate('/')
       // Optionally, show success message or navigate to another page
     } catch (error) {
-      // console.error('Error adding document: ', error);
+      console.error('Error adding document: ', error);
       alert('error uploading the to the firebase')
       // Handle error
     }

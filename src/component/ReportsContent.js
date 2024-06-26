@@ -1,6 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { collection, getDocs } from 'firebase/firestore';
-import { db } from '../config/firebaseConfig';
+import React from 'react';
 import MyTable from './table';
 
 const MainContent = ({data, loading}) => {
@@ -56,7 +54,7 @@ const MainContent = ({data, loading}) => {
   const columns = [
     {label:'S.No',
        key:'s.no',
-       render: (name,index) => (
+       render: (name, index) => (
         <span>{index + 1}</span>
        )
     },
@@ -74,7 +72,8 @@ const MainContent = ({data, loading}) => {
         <span key={index}>{name}&emsp;{(row.topaid === 0) ? 'paid' : 'Not paid'}</span>
       )
     },
-    { label: "Total Earnings", key: "earnings" },
+    { label: "Total Collation", key: "earnings" },
+
   ];
 
   if (loading) {

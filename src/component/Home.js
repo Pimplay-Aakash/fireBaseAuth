@@ -5,8 +5,9 @@ import Sidebar from './Sidebar';
 import HomeContent from './HomeContent';
 import ReportsContent from './ReportsContent';
 import Login from './Login';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs,query,where, orderBy} from 'firebase/firestore';
 import { db } from '../config/firebaseConfig';
+import { useAuth } from '../config/AuthContext';
 
 
 const Home = () => {
@@ -26,27 +27,90 @@ const Home = () => {
     setShowLoginModal(false);
   };
 
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const querySnapshot = await getDocs(collection(db, 'formSubmissions'));
+  //       const fetchedData = querySnapshot.docs.map(doc => ({
+  //         id: doc.id,
+  //         ...doc.data()
+  //       }));
+  //       setData(fetchedData);
+  //       setLoading(false);
+  //     } catch (error) {
+  //       // console.error("Error fetching data: ", error);
+  //       alert(`error fetching the data`)
+  //       setLoading(false); // Ensure loading state is set to false on error
+  //     }
+  //   };
+
+  //   fetchData();
+  // }, []); // Empty dependency array to fetch data once on component mount
+
+  // Get the current user from AuthContext
+  const { currentUser } = useAuth(); // Ensure this provides userId
+
+
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     if (!currentUser) {
+  //       alert('User not logged in');
+  //       setLoading(false);
+  //       return;
+  //     }
+
+  //     try {
+  //       const q = query(
+  //         collection(db, 'formSubmissions'),
+  //         where('userId', '==', currentUser.uid) // Filter by userId
+  //       );
+  //       const querySnapshot = await getDocs(q);
+  //       const fetchedData = querySnapshot.docs.map(doc => ({
+  //         id: doc.id,
+  //         ...doc.data()
+  //       }));
+  //       setData(fetchedData);
+  //     } catch (error) {
+  //       alert('Error fetching data');
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   fetchData();
+  // }, []); 
+
   useEffect(() => {
     const fetchData = async () => {
+      if (!currentUser) {
+        alert('User not logged in');
+        setLoading(false);
+        return;
+      }
+
       try {
-        const querySnapshot = await getDocs(collection(db, 'formSubmissions'));
+        const q = query(
+          collection(db, 'formSubmissions'),
+          where('userId', '==', currentUser.uid), // Filter by userId
+          orderBy('timestamp', 'desc') // Order by timestamp descending
+        );
+        const querySnapshot = await getDocs(q);
         const fetchedData = querySnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
         }));
         setData(fetchedData);
-        setLoading(false);
       } catch (error) {
-        // console.error("Error fetching data: ", error);
-        alert(`error fetching the data`)
-        setLoading(false); // Ensure loading state is set to false on error
+        alert('Error fetching data');
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchData();
-  }, []); // Empty dependency array to fetch data once on component mount
+  }, [currentUser]); 
 
-  // console.log("data for the home", data);
+  console.log("data for the home", data);
 
   // Assuming data[0].categoryCounts is an object with keys like 'new', 'demo', 'bio', etc.
   // const categoryCountsToArray = (categoryCountsObject) => {

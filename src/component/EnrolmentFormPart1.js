@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 
 const EnrolmentFormPart1 = ({
   formData,
@@ -96,6 +96,7 @@ const EnrolmentFormPart1 = ({
             value={categoryCounts.date}
             onChange={handleDateChange}
             className="p-2 border rounded"
+            required
           />
         </div>
         <div className="mb-4">

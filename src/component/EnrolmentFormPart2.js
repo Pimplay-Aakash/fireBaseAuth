@@ -254,7 +254,7 @@
 
 //////////////////////////////////////////
 
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 
 const EnrolmentFormPart2 = ({
   formData,
@@ -272,42 +272,54 @@ const EnrolmentFormPart2 = ({
   errors,
 }) => {
 
-  // Function to calculate earnings
-  const calculateEarnings = () => {
-    let totalPendingEarnings = 0;
-    let totalReceivedEarnings = 0;
-    let totalExpenses = 0;
+  // // Function to calculate earnings
+  // const calculateEarnings = () => {
+  //   let totalPendingEarnings = 0;
+  //   let totalReceivedEarnings = 0;
+  //   let totalExpenses = 0;
 
-    // Calculate total pending referral earnings
-    formData.pendingReferralDetails.forEach(referral => {
-      totalPendingEarnings += parseFloat(referral.amountPerCard) * parseInt(referral.numberOfCards);
-    });
+  //   // Calculate total pending referral earnings
+  //   formData.pendingReferralDetails.forEach(referral => {
+  //     totalPendingEarnings += parseFloat(referral.amountPerCard) * parseInt(referral.numberOfCards);
+  //   });
 
-    // Calculate total received referral earnings
-    formData.receivedReferralDetails.forEach(referral => {
-      totalReceivedEarnings += parseFloat(referral.amountPerCard) * parseInt(referral.numberOfCards);
-    });
+  //   // Calculate total received referral earnings
+  //   formData.receivedReferralDetails.forEach(referral => {
+  //     totalReceivedEarnings += parseFloat(referral.amountPerCard) * parseInt(referral.numberOfCards);
+  //   });
 
-    // Calculate total expenses
-    formData.expenseDetails.forEach(expense => {
-      totalExpenses += parseFloat(expense.amount);
-    });
+  //   // Calculate total expenses
+  //   formData.expenseDetails.forEach(expense => {
+  //     totalExpenses += parseFloat(expense.amount);
+  //   });
 
-    // Calculate net earnings
-    const netEarnings = (totalPendingEarnings + totalReceivedEarnings) - totalExpenses;
+  //   // Calculate net earnings
+  //   const netEarnings = (totalPendingEarnings + totalReceivedEarnings) - totalExpenses;
 
-    // Update state with the calculated earnings
-    setCategoryCounts(prevCounts => ({
-      ...prevCounts,
-      earnings: netEarnings,
-    }));
-  };
+  //   // Update state with the calculated earnings
+  //   setCategoryCounts(prevCounts => ({
+  //     ...prevCounts,
+  //     earnings: netEarnings,
+  //   }));
+  // };
 
-  // Calculate earnings when form data changes or on button click (optional)
-  React.useEffect(() => {
+  // // Calculate earnings when form data changes or on button click (optional)
+  // React.useEffect(() => {
+  //   calculateEarnings();
+  // }, [formData]);
+
+  useEffect(() => {
+    const calculateEarnings = () => {
+      const netEarnings = parseInt(formData.cashCollected) + parseInt(formData.onlineCashCollected);
+      setCategoryCounts(prevCounts => ({
+        ...prevCounts,
+        earnings: netEarnings,
+      }));
+    };
+  
     calculateEarnings();
-  }, [formData]);
-
+  }, [formData.cashCollected, formData.onlineCashCollected, setCategoryCounts]);
+  
   // For handling checkbox change (existing functionality)
   const handleCheckboxChange2 = (e) => {
     setIsConfirmedPart2(e.target.checked);
@@ -567,14 +579,6 @@ const EnrolmentFormPart2 = ({
         </label>
       </div>
       
-      {/* Submit Button */}
-      {/* <button
-        type="button"
-        onClick={handleFormSubmit}
-        className="bg-blue-500 text-white px-4 py-2 rounded-lg"
-      >
-        Submit
-      </button> */}
     </div>
   );
 };
