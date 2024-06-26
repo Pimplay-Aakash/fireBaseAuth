@@ -5,7 +5,7 @@ const MyTable = ({ columns, data, perPageLimit, pageBtnLimit, styleClass }) => {
   const [pageNation, setPageNation] = useState(1);
   const [sorting, setSorting] = useState({ key: null, direction: 'asc' });
   const [searchValue, setSearchValue] = useState('');
-  const [pageData, setPageData] = useState(perPageLimit);
+  const [pageData] = useState(perPageLimit);
   const [checkboxes, setCheckboxes] = useState(Array(data.length).fill(false));
   const [headCheckbox, setHeadCheckbox] = useState(false);
   const [filteredData, setFilteredData] = useState(data);
@@ -115,13 +115,13 @@ const MyTable = ({ columns, data, perPageLimit, pageBtnLimit, styleClass }) => {
   const startIndex = (pageNation - 1) * pageData;
   const pagedData = filteredData.slice(startIndex, startIndex + pageData);
 
-  const handlePageData = (value) => {
-    const numValue = Number(value);
-    setPageData(numValue);
-    setPageNation(1);
-  };
+  // const handlePageData = (value) => {
+  //   const numValue = Number(value);
+  //   setPageData(numValue);
+  //   setPageNation(1);
+  // };
 
-  const dataToShow = [2, 4, 6, 8, 10, 12, 14, 16];
+  // const dataToShow = [2, 4, 6, 8, 10, 12, 14, 16];
 
   return (
     <div className='flex flex-col justify-center items-center mt-5 w-full'>

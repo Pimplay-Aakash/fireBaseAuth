@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { createUserWithEmailAndPassword, updateProfile, signInWithPopup, signInWithEmailAndPassword } from 'firebase/auth';
 import { auth, GoogleProvider } from '../config/firebaseConfig'; // Adjust the path based on your setup
-import { useNavigate } from "react-router-dom"
+// import { useNavigate } from "react-router-dom"
 
 const Login = ({closeModal}) => {
   const [email, setEmail] = useState('');
@@ -15,7 +15,7 @@ const Login = ({closeModal}) => {
   const [showConfirmPass, setShowConfirmPass] = useState(false);
   const [attemptedSubmit, setAttemptedSubmit] = useState(false);
 
-  const navigate =  useNavigate()
+  // const navigate =  useNavigate()
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -128,7 +128,7 @@ const Login = ({closeModal}) => {
         } else {
           // Attempt to sign in with existing credentials
           const userCredential = await signInWithEmailAndPassword(auth, email, password);
-          // console.log('User signed in:', userCredential.user);
+          console.log('User signed in:', userCredential.user);
           closeModal();
         }
       } catch (error) {
@@ -160,7 +160,7 @@ const Login = ({closeModal}) => {
     // const provider = new GoogleAuthProvider();
     try {
       const result = await signInWithPopup(auth, GoogleProvider );
-      // console.log('Google sign-in result:', result);
+      console.log('Google sign-in result:', result);
       closeModal()
       // Handle successful sign-in, maybe redirect or update UI
     } catch (error) {
