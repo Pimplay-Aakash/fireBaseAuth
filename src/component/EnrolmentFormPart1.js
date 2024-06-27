@@ -23,15 +23,16 @@ const EnrolmentFormPart1 = ({
     }, 0);
   };
 
-  // Update categoryCounts.ibrahim and categoryCounts.ispaid when ibrahim data changes
+  // Update categoryCounts.ibrahim and categoryCounts.topaid when ibrahim data changes
   useEffect(() => {
     const totalPaidAmount = calculateIbrahimTotal(ibrahim, "paid");
     const totalNotPaidAmount = calculateIbrahimTotal(ibrahim, "notPaid");
-
+  
     setCategoryCounts((prevCounts) => ({
       ...prevCounts,
       ibrahim: totalPaidAmount,
       topaid: totalNotPaidAmount,
+      date: prevCounts.date || '' // Ensure the date remains unchanged
     }));
   }, [ibrahim, setCategoryCounts]);
 
@@ -47,7 +48,7 @@ const EnrolmentFormPart1 = ({
         m000Update: categoryCounts.m000 ?? prevData.m000Update,
         others: categoryCounts.others ?? prevData.others,
         depositeamount: categoryCounts.totalDeposite ?? prevData.cashCollected,
-        date: categoryCounts.date ?? prevData.date, // Update formData with date
+        // date: categoryCounts.date, // Commented out to avoid overwriting the date
       }));
     }
   }, [categoryCounts, setFormData]);

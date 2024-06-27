@@ -59,9 +59,10 @@ const EnrolmentFormParent = () => {
   const { currentUser } = useAuth()
   const navigate =  useNavigate()
 
-  console.log('formData',formData );
+  // console.log('formData',formData );
   console.log('categoryCounts',categoryCounts );
   console.log('fileContent',fileContent );
+  console.log('fileContent',setFilteredResults );
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -118,7 +119,7 @@ const EnrolmentFormParent = () => {
       const mandatoryBiometricUpdate = item.mandatoryBiometricUpdate?.trim().toLowerCase();
       const totalAmountCharged = parseFloat(item.totalAmountCharged);
       const type = item.type?.trim();
-
+  
       if (mandatoryBiometricUpdate === 'no' && totalAmountCharged === 50) {
         return { ...item, category: 'demo' };
       } else if (mandatoryBiometricUpdate === 'no' && totalAmountCharged === 100) {
@@ -133,9 +134,7 @@ const EnrolmentFormParent = () => {
         return { ...item, category: 'others' };
       }
     });
-
-    setFilteredResults(filtered);
-
+  
     const counts = {
       demo: 0,
       bio: 0,
@@ -144,22 +143,27 @@ const EnrolmentFormParent = () => {
       new: 0,
       others: 0,
       totalDeposite: 0,
+      date: categoryCounts.date, // Preserve existing date
+      ibrahim: categoryCounts.ibrahim,
+      topaid: categoryCounts.topaid,
+      earnings: categoryCounts.earnings,
     };
-
+  
     let totalDeposite = 0;
-
+  
     details.forEach((item) => {
       totalDeposite += parseFloat(item.totalAmountCharged);
     });
-
+  
     counts.totalDeposite = totalDeposite;
-
+  
     filtered.forEach((item) => {
       counts[item.category]++;
     });
-
+  
     setCategoryCounts(counts);
   };
+  
 
   // console.log('extractedData', extractedData);
   // console.log('filteredResults', filteredResults);
