@@ -1,63 +1,33 @@
-import React from 'react';
+import React, { useState } from 'react';
 import MyTable from './table';
+import { useNavigate } from 'react-router-dom';
+import DeleteModal from './DeleteModal';
 
-const MainContent = ({data, loading}) => {
-//   const [data, setData] = useState([]);
-//   const [loading, setLoading] = useState(true);
+const ReportsContent = ({ data, loading, onDelete }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentDataId, setCurrentDataId] = useState(null);
 
-//   useEffect(() => {
-//     const fetchData = async () => {
-//       try {
-//         const querySnapshot = await getDocs(collection(db, 'formSubmissions'));
-//         const fetchedData = querySnapshot.docs.map(doc => ({
-//           id: doc.id,
-//           ...doc.data()
-//         }));
-//         setData(fetchedData);
-//         setLoading(false);
-//       } catch (error) {
-//         console.error("Error fetching data: ", error);
-//         setLoading(false); // Ensure loading state is set to false on error
-//       }
-//     };
+  const navigate = useNavigate();
 
-//     fetchData();
-//   }, []); // Empty dependency array to fetch data once on component mount
+  // const openModal = (dataId) => {
+  //   setCurrentDataId(dataId);
+  //   setIsModalOpen(true);
+  // };
 
-//   if (loading) {
-//     return <p>Loading data...</p>;
-//   }
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setCurrentDataId(null);
+  };
 
-//   // Assuming data[0].categoryCounts is an object with keys like 'new', 'demo', 'bio', etc.
-//   // const categoryCountsToArray = (categoryCountsObject) => {
-//   //   return Object.entries(categoryCountsObject).map(([key, value]) => ({ key, value }));
-//   // };
-  
-//   // Example usage:
-//   const arraydata = []
-//   const makeArray = (data) => {
-//     for (let i = 0; i < data.length; i++) {
-  
-//       const categoryCounts = data.length > 0 ? data[i].categoryCounts : {};
-//       arraydata.push(categoryCounts)
-//     }
-
-//   }
-
-//   const transformData = makeArray(data)
-  // const categoryCountsArray = categoryCountsToArray(categoryCounts);
-//   console.log('transformData', transformData);
-//   console.log('arraydata', arraydata);
-//   console.log('data', data);
-  
+  const handleDeleteConfirm = () => {
+    if (currentDataId) {
+      onDelete(currentDataId);
+      closeModal();
+    }
+  };
 
   const columns = [
-    {label:'S.No',
-       key:'s.no',
-       render: (name, index) => (
-        <span>{index + 1}</span>
-       )
-    },
+    { label: 'S.No', key: 's.no', render: (name, index) => <div>{index + 1}</div> },
     { label: "Date", key: "date" },
     { label: "New", key: "new" },
     { label: "Demo", key: "demo" },
@@ -68,31 +38,55 @@ const MainContent = ({data, loading}) => {
     { label: "Deposite", key: "totalDeposite" },
     { label: "Ibrahim", 
       key: "ibrahim",
-      render: (name,index,row) => (
+      render: (name, index, row) => (
         <span key={index}>{name}&emsp;{(row.topaid === 0) ? 'paid' : 'Not paid'}</span>
       )
     },
     { label: "Total Collation", key: "earnings" },
-
+    {
+      label: "Action",
+      key: "action",
+      render: (name, index, row) => (
+        <span key={index} className="flex gap-2">
+          <button 
+            onClick={() => navigate(`/EnrolmentForm/${row.dataId}`)}
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 transition">
+            Update
+          </button>
+          <button
+            onClick={() => {
+              setCurrentDataId(row.dataId);
+              setIsModalOpen(true);
+            }}
+            className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-50 transition"
+          >
+            Delete
+          </button>
+        </span>
+      )
+    }
   ];
 
   if (loading) {
-        return <p>Loading data...</p>;
-    }
+    return <p>Loading data...</p>;
+  }
 
   return (
-    <main className="flex-grow p-4  overflow-auto">
-      <h1 className="text-3xl font-semibold mb-4">Dashboard</h1>
-      {/* <p>Welcome to your dashboard! Here you can find a quick overview of your activities and data.</p> */}
-
+    <main className="flex-grow p-4 overflow-auto">
+      <h1 className="text-3xl font-semibold mb-4">Reports</h1>
       <MyTable
-        data={data} // Pass categoryCounts directly
+        data={data}
         columns={columns}
-        perPageLimit={10} // Example limits, adjust as needed
+        perPageLimit={10}
         pageBtnLimit={5}
+      />
+      <DeleteModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        onDelete={handleDeleteConfirm}
       />
     </main>
   );
 };
 
-export default MainContent;
+export default ReportsContent;

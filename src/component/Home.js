@@ -5,7 +5,7 @@ import Sidebar from './Sidebar';
 import HomeContent from './HomeContent';
 import ReportsContent from './ReportsContent';
 import Login from './Login';
-import { collection, getDocs,query,where, orderBy} from 'firebase/firestore';
+import { collection, getDocs,query,where, orderBy, deleteDoc, doc} from 'firebase/firestore';
 import { db } from '../config/firebaseConfig';
 import { useAuth } from '../config/AuthContext';
 
@@ -110,7 +110,18 @@ const Home = () => {
     fetchData();
   }, [currentUser]); 
 
-  console.log("data for the home", data);
+
+  const handleDelete = async (dataId) => {
+    try {
+      await deleteDoc(doc(db, 'formSubmissions', dataId));
+      // Remove the deleted entry from the state
+      setData(prevData => prevData.filter(item => item.id !== dataId));
+    } catch (error) {
+      console.error('Error deleting document: ', error);
+      alert('Failed to delete the document');
+    }
+  };
+  // console.log("data for the home", data);
 
   // Assuming data[0].categoryCounts is an object with keys like 'new', 'demo', 'bio', etc.
   // const categoryCountsToArray = (categoryCountsObject) => {
@@ -118,15 +129,35 @@ const Home = () => {
   // };
   
   // Example usage:
-  const arraydata = []
-  const makeArray = (data) => {
-    for (let i = 0; i < data.length; i++) {
-  
-      const categoryCounts = data.length > 0 ? data[i].categoryCounts : {};
-      arraydata.push(categoryCounts)
-    }
+  // const arraydata = []
+  // const makeArray = (data) => {
+  //   for (let i = 0; i < data.length; i++) {
+  //     // console.log('id of the data ', data[i].id);
+  //     const dataId = data[i].id
+  //     const categoryCounts = data.length > 0 ? data[i].categoryCounts : {};
+  //     arraydata.push(categoryCounts)
+  //   }
 
+  // }
+
+  const arraydata = [];
+
+const makeArray = (data) => {
+  for (let i = 0; i < data.length; i++) {
+    const dataId = data[i].id;
+    const categoryCounts = data.length > 0 ? data[i].categoryCounts : {};
+
+    // Clone and add dataId to categoryCounts
+    const updatedCategoryCounts = {
+      ...categoryCounts,
+      dataId: dataId,
+    };
+
+    // Push the updated object to array
+    arraydata.push(updatedCategoryCounts);
   }
+  // console.log('updatedCategoryCounts', arraydata);
+};
 
  makeArray(data)
 
@@ -137,7 +168,7 @@ const Home = () => {
         <Sidebar setCurrentView={setCurrentView} currentView={currentView}/> {/* Pass setCurrentView to Sidebar */}
         <div className="flex-grow">
           {currentView === 'home' && <HomeContent data={arraydata} loading={loading} />}
-          {currentView === 'reports' && <ReportsContent data={arraydata} loading={loading} />}
+          {currentView === 'reports' && <ReportsContent data={arraydata} loading={loading} onDelete={handleDelete} />}
           {/* Add more components as needed */}
         </div>
       </div>

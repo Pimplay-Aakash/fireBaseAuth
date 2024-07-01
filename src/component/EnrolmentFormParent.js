@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import EnrolmentFormPart1 from './EnrolmentFormPart1';
 import EnrolmentFormPart2 from './EnrolmentFormPart2';
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import { db } from '../config/firebaseConfig';
-import { collection, addDoc,serverTimestamp } from "firebase/firestore"; 
+import { collection, addDoc,serverTimestamp, doc, getDoc, updateDoc } from "firebase/firestore"; 
 
 import { useAuth } from "../config/AuthContext"
 
@@ -30,10 +30,8 @@ const EnrolmentFormParent = () => {
     paymentStatus: 'notPaid',
     comment: ''
   }])
+  const [error, setError] = useState(null);
 
-  // console.log("formData for total Earning",formData.pendingReferralDetails);
-  // console.log("formData for total Earning",formData.receivedReferralDetails);
-  // console.log("formData for total Earning",formData.expenseDetails);
   
   const [fileContent, setFileContent] = useState(null);
   const [extractedData, setExtractedData] = useState(null);
@@ -56,13 +54,52 @@ const EnrolmentFormParent = () => {
   const [isConfirmedPart1, setIsConfirmedPart1] = useState(false);
   const [isConfirmedPart2, setIsConfirmedPart2] = useState(false);
 
+  const {id}  = useParams()
+  // console.log('dataId',id);
+
+ 
+  useEffect(() => {
+    const fetchData = async (id) => {
+      try {
+        // Create a reference to the document
+        const docRef = doc(db, "formSubmissions", id);
+        // Fetch the document
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          // If document exists, set the data
+          // console.log(" fetch the data by ID", docSnap.data() );
+          setFormData(docSnap.data().formData);
+          setCategoryCounts(docSnap.data().categoryCounts);
+          setFilteredResults(docSnap.data().categoryCounts);
+          setIbrahim(docSnap.data().ibrahim);
+        } else {
+          // Document does not exist
+          console.log("No such document!");
+          setError("No data found for the provided ID.");
+        }
+      } catch (err) {
+        console.error("Error fetching document:", err);
+        setError("Failed to fetch data.");
+      }
+    };
+
+    if (id) {
+      fetchData(id);
+    }
+  }, [id]);
+
+  // console.log("formData for total Earning",formData.pendingReferralDetails);
+  // console.log("formData for total Earning",formData.receivedReferralDetails);
+  // console.log("formData for total Earning",formData.expenseDetails);
+
   const { currentUser } = useAuth()
   const navigate =  useNavigate()
 
   // console.log('formData',formData );
-  console.log('categoryCounts',categoryCounts );
-  console.log('fileContent',fileContent );
-  console.log('fileContent',setFilteredResults );
+  // console.log('categoryCounts',categoryCounts );
+  // console.log('fileContent',fileContent );
+  // console.log('fileContent',setFilteredResults );
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -275,6 +312,51 @@ const EnrolmentFormParent = () => {
     }
   };
 
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+
+  //   // Prepare data to send to Firestore
+  //   const dataToSend = {
+  //     formData,
+  //     ibrahim,
+  //     extractedData,
+  //     filteredResults,
+  //     categoryCounts,
+  //     userId: currentUser.uid,
+  //     timestamp: serverTimestamp(),
+  //   };
+
+  //   try {
+  //   // Send data to Firestore
+  //   // const docRef = await db.collection('formSubmissions').addDoc(dataToSend);
+  //   const docRef = await addDoc(collection(db, 'formSubmissions'), dataToSend);
+  //   console.log('Document written with ID: ', docRef.id);
+
+  //     // Optionally, reset form data after submission
+  //     setFormData({
+  //       newEnrolment: '',
+  //       demographicUpdate: '',
+  //       bioUpdate: '',
+  //       m100Update: '',
+  //       m000Update: '',
+  //       others: '',
+  //       othersAmount: '',
+  //       cashCollected: '',
+  //       onlineCashCollected: '',
+  //       pendingReferralDetails: [],
+  //       receivedReferralDetails: [],
+  //       expenseDetails: [],
+  //     });
+
+  //     navigate('/')
+  //     // Optionally, show success message or navigate to another page
+  //   } catch (error) {
+  //     console.error('Error adding document: ', error);
+  //     alert('error uploading the to the firebase')
+  //     // Handle error
+  //   }
+  // };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -290,10 +372,16 @@ const EnrolmentFormParent = () => {
     };
 
     try {
-    // Send data to Firestore
-    // const docRef = await db.collection('formSubmissions').addDoc(dataToSend);
-    const docRef = await addDoc(collection(db, 'formSubmissions'), dataToSend);
-    console.log('Document written with ID: ', docRef.id);
+      if (id) {
+        // Update existing document
+        const docRef = doc(db, 'formSubmissions', id);
+        await updateDoc(docRef, dataToSend);
+        console.log('Document updated with ID: ', id);
+      } else {
+        // Add new document
+        const docRef = await addDoc(collection(db, 'formSubmissions'), dataToSend);
+        console.log('Document written with ID: ', docRef.id);
+      }
 
       // Optionally, reset form data after submission
       setFormData({
@@ -311,14 +399,14 @@ const EnrolmentFormParent = () => {
         expenseDetails: [],
       });
 
-      navigate('/')
-      // Optionally, show success message or navigate to another page
+      // Navigate to home or show success message
+      navigate('/');
     } catch (error) {
-      console.error('Error adding document: ', error);
-      alert('error uploading the to the firebase')
-      // Handle error
+      console.error('Error submitting document: ', error);
+      alert('Error uploading the data to Firestore');
     }
   };
+
 
   const [part, setPart] = useState(1);
 
@@ -339,12 +427,17 @@ const EnrolmentFormParent = () => {
     return requiredFields.every((field) => formData[field] !== '');
   };
 
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
   return (
     <div className='bg-gray-100  p-5'>
       <form onSubmit={handleFormSubmit} className="max-w-xl mx-auto mt-10 py-10 px-10 border rounded-lg shadow-md bg-white">
         {part === 1 && (
           <EnrolmentFormPart1
             formData={formData}
+            fileContent={fileContent}
             setIbrahim={setIbrahim}
             ibrahim={ibrahim}
             setFormData={setFormData}
@@ -397,7 +490,7 @@ const EnrolmentFormParent = () => {
               className={`bg-blue-500 text-white px-4 py-2 rounded ${!(isFormValid() && isConfirmedPart2) ? 'opacity-50 cursor-not-allowed' : ''}`} 
               disabled={!(isFormValid() && isConfirmedPart2)}    
               >
-              Submit
+              {id ? 'Update Data' : 'Submit'}
             </button>
           )}
         </div>

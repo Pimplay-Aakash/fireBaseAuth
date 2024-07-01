@@ -41,6 +41,7 @@ const AppRoutes = () => {
         <Route path="/" element={<Home />} />
         {/* <Route path="/login" element={<Login />} /> */}
         <Route path="/EnrolmentForm" element={<EnrolmentFormParent />} />
+        <Route path="/EnrolmentForm/:id" element={<EnrolmentFormParent />} />
       </Routes>
     </Router>
   );
